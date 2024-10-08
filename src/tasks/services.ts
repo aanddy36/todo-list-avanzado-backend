@@ -1,7 +1,7 @@
 import Task from "./models";
 import User from "../users/models";
 
-export const getAllTasksService = async (page = 1, completed = null) => {
+export const getAllTasksService = async (page = 1, completed: boolean | null = null) => {
   const limit = 5; // Número de elementos por página
   const offset = (page - 1) * limit;
 

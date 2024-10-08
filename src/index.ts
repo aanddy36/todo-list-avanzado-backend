@@ -6,6 +6,8 @@ import tasks from "./tasks/routes";
 import cors from "cors";
 import dotenv from "dotenv";
 import sequelize from "./db/sequelize";
+import { validateRequest } from "./middleware/validateRequest";
+import Joi from "joi";
 
 dotenv.config();
 const app = express();
@@ -30,6 +32,15 @@ app.get("/", (_, res) => {
   res.send("hola");
 });
 
+const schema = Joi.object({
+  name: Joi.string().required(),
+  age: Joi.number().integer().min(0).required(),
+});
+
+app.post("/api/test", validateRequest(schema), (_, res) => {
+  res.status(200).json({ msg: "Datos válidos" });
+});
+
 io.on('connection', (socket) => {
   console.log('Cliente conectado:', socket.id);
 
@@ -38,7 +49,7 @@ io.on('connection', (socket) => {
   });
 });
 
-export { io };
+export { io, app };
 
 const startServer = async () => {
   try {
