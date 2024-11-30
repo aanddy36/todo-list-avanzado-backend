@@ -15,7 +15,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new SocketServer(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "*",
   },
 });
 
@@ -28,8 +28,9 @@ app.use("/tasks", tasks);
 
 const PORT = process.env.PORT || 5000;
 
-app.get("/", (_, res) => {
-  res.send("hola");
+app.get("/", (req, res) => {
+  const serverIP = req.socket.localAddress;
+  res.send(`<h1>Server IP: ${serverIP}</h1>`);
 });
 
 const schema = Joi.object({
@@ -41,11 +42,11 @@ app.post("/api/test", validateRequest(schema), (_, res) => {
   res.status(200).json({ msg: "Datos válidos" });
 });
 
-io.on('connection', (socket) => {
-  console.log('Cliente conectado:', socket.id);
+io.on("connection", (socket) => {
+  console.log("Cliente conectado:", socket.id);
 
-  socket.on('disconnect', () => {
-    console.log('Cliente desconectado:', socket.id);
+  socket.on("disconnect", () => {
+    console.log("Cliente desconectado:", socket.id);
   });
 });
 
@@ -56,7 +57,7 @@ const startServer = async () => {
     await sequelize.sync();
 
     server.listen(PORT, () => {
-      /* console.log(`El servidor corre en el puerto ${PORT}`); */
+      console.log(`El servidor corre en el puerto ${PORT}`);
     });
   } catch (error) {
     console.error("No se pudo conectar:", error);
